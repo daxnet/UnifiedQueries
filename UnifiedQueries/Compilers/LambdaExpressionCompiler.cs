@@ -6,22 +6,6 @@
 
     public class LambdaExpressionCompiler<T> : QuerySpecificationCompiler<LinqExpressions.Expression<Func<T, bool>>>
     {
-        private static bool IsNullableType(Type t)
-        {
-            return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
-
-        private static LinqExpressions.Expression GetRelationalExpression(
-            LinqExpressions.Expression e1,
-            LinqExpressions.Expression e2,
-            Func<LinqExpressions.Expression, LinqExpressions.Expression, LinqExpressions.BinaryExpression> operation)
-        {
-            if (IsNullableType(e1.Type) && !IsNullableType(e2.Type))
-                e2 = LinqExpressions.Expression.Convert(e2, e1.Type);
-            else if (!IsNullableType(e1.Type) && IsNullableType(e2.Type))
-                e1 = LinqExpressions.Expression.Convert(e1, e2.Type);
-            return operation(e1, e2);
-        }
         /// <summary>
         /// Performs the compile.
         /// </summary>
@@ -29,7 +13,7 @@
         /// <returns></returns>
         protected override LinqExpressions.Expression<Func<T, bool>> PerformCompile(QuerySpecification querySpecification)
         {
-            var type = typeof(T); //new DynamicTypeBuilder(querySpecification).BuildType();
+            var type = typeof(T); // new DynamicTypeBuilder(querySpecification).BuildType();
 
             var objectStack = new Stack<object>();
             var visitor = new DelegatedQuerySpecificationVisitor(
@@ -52,13 +36,14 @@
                     var constantExpression = LinqExpressions.Expression.Constant(e.GetValue());
                     if (e.Type == DataTypes.String)
                     {
-                        var methodInfo = typeof(String).GetMethod(e.Operator.ToString(), new[] { typeof(string) });
+                        var methodInfo = typeof(string).GetMethod(e.Operator.ToString(), new[] { typeof(string) });
+                        // ReSharper disable PossiblyMistakenUseOfParamsMethod
                         expressionStack.Push(LinqExpressions.Expression.Call(propertyExpression, methodInfo, constantExpression));
+                        // ReSharper restore PossiblyMistakenUseOfParamsMethod
                     }
                     else
                     {
-                        Func<LinqExpressions.Expression, LinqExpressions.Expression, LinqExpressions.BinaryExpression>
-                            relationalOperationExpression;
+                        Func<LinqExpressions.Expression, LinqExpressions.Expression, LinqExpressions.BinaryExpression> relationalOperationExpression;
                         switch (e.Operator)
                         {
                             case RelationalOperators.EqualTo:
@@ -79,6 +64,7 @@
                             default:
                                 throw new NotSupportedException(string.Format("The relational operator {0} is not supported.", e.Operator));
                         }
+
                         expressionStack.Push(GetRelationalExpression(propertyExpression, constantExpression, relationalOperationExpression));
                     }
                 }
@@ -100,8 +86,7 @@
                     var logicalOperation = item as LogicalOperation;
                     var e1 = expressionStack.Pop();
                     var e2 = expressionStack.Pop();
-                    Func<LinqExpressions.Expression, LinqExpressions.Expression, LinqExpressions.BinaryExpression>
-                            relationalOperationExpression;
+                    Func<LinqExpressions.Expression, LinqExpressions.Expression, LinqExpressions.BinaryExpression> relationalOperationExpression;
                     switch (logicalOperation.Operator)
                     {
                         case LogicalOperators.And:
@@ -113,12 +98,35 @@
                         default:
                             throw new NotSupportedException(string.Format("The relational operator {0} is not supported.", logicalOperation.Operator));
                     }
+
                     expressionStack.Push(relationalOperationExpression(e1, e2));
                 }
             }
 
             var builtExpression = expressionStack.Pop();
             return LinqExpressions.Expression.Lambda<Func<T, bool>>(builtExpression, parameterExpression);
+        }
+
+        private static bool IsNullableType(Type t)
+        {
+            return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        private static LinqExpressions.Expression GetRelationalExpression(
+            LinqExpressions.Expression e1,
+            LinqExpressions.Expression e2,
+            Func<LinqExpressions.Expression, LinqExpressions.Expression, LinqExpressions.BinaryExpression> operation)
+        {
+            if (IsNullableType(e1.Type) && !IsNullableType(e2.Type))
+            {
+                e2 = LinqExpressions.Expression.Convert(e2, e1.Type);
+            }
+            else if (!IsNullableType(e1.Type) && IsNullableType(e2.Type))
+            {
+                e1 = LinqExpressions.Expression.Convert(e1, e2.Type);
+            }
+
+            return operation(e1, e2);
         }
     }
 }

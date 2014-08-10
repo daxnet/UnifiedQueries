@@ -1,5 +1,4 @@
-﻿
-namespace UnifiedQueries
+﻿namespace UnifiedQueries
 {
     /// <summary>
     /// Represents that the implemented classes are query specification compilers.

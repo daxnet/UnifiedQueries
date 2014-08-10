@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("UnifiedQueries")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Provides a unified query schema and the compilers to compile the query specification into another representation.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("daxnet")]
 [assembly: AssemblyProduct("UnifiedQueries")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © daxnet 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

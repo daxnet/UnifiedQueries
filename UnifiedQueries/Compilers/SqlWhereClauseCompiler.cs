@@ -11,21 +11,20 @@
     public class SqlWhereClauseCompiler : QuerySpecificationCompiler<string>
     {
         /// <summary>
-        /// The use parameter.
-        /// </summary>
-        private bool useParameter;
-
-        /// <summary>
         /// The parameter values.
         /// </summary>
         private readonly Dictionary<string, object> parameterValues = new Dictionary<string, object>();
+
+        /// <summary>
+        /// The use parameter.
+        /// </summary>
+        private bool useParameter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlWhereClauseCompiler"/> class.
         /// </summary>
         public SqlWhereClauseCompiler()
         {
-            
         }
 
         /// <summary>
@@ -38,22 +37,6 @@
             this.useParameter = useParameter;
         }
 
-
-        protected virtual char LikeSymbol
-        {
-            get
-            {
-                return '%';
-            }
-        }
-
-        protected virtual char ParameterChar
-        {
-            get
-            {
-                return '@';
-            }
-        }
 
         public IEnumerable<KeyValuePair<string, object>> ParameterValues
         {
@@ -69,9 +52,26 @@
             {
                 return this.useParameter;
             }
+
             set
             {
                 this.useParameter = value;
+            }
+        }
+
+        protected virtual char LikeSymbol
+        {
+            get
+            {
+                return '%';
+            }
+        }
+
+        protected virtual char ParameterChar
+        {
+            get
+            {
+                return '@';
             }
         }
 
@@ -103,7 +103,7 @@
                     break;
             }
 
-            if (useParameter)
+            if (this.useParameter)
             {
                 if (expr.Type == DataTypes.String)
                 {
@@ -146,6 +146,7 @@
                                 sb.AppendFormat("'{1}{0}{1}'", expr.Value, this.LikeSymbol);
                                 break;
                         }
+
                         break;
                     default:
                         sb.Append(expr.Value);
@@ -201,6 +202,7 @@
                             rightQuery));
                 }
             }
+
             return queryStack.Pop();
         }
     }

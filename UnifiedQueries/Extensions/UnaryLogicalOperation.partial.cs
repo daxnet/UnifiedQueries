@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-// ReSharper disable CheckNamespace
+﻿// ReSharper disable CheckNamespace
 namespace UnifiedQueries
     // ReSharper restore CheckNamespace
 {
-    partial class UnaryLogicalOperation
+    public partial class UnaryLogicalOperation
     {
         public override string ToString()
         {

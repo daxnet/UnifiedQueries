@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-// ReSharper disable CheckNamespace
+﻿// ReSharper disable CheckNamespace
 namespace UnifiedQueries
     // ReSharper restore CheckNamespace
 {
-	partial class QuerySpecification
-	{
+    public partial class QuerySpecification
+    {
         public override string ToString()
         {
             return this.Item.ToString();
         }
-	}
+    }
 }

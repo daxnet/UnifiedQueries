@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-// ReSharper disable CheckNamespace
+﻿// ReSharper disable CheckNamespace
 namespace UnifiedQueries
     // ReSharper restore CheckNamespace
 {
+    using System;
     using System.Xml.Serialization;
 
-    partial class Expression
+    public partial class Expression
     {
         [XmlIgnore]
-        public Type CLRType
+        public Type ClrType
         {
             get
             {
-                var typeName = string.Format("System.{0}", this.typeField.ToString());
+                var typeName = string.Format("System.{0}", this.typeField);
                 return System.Type.GetType(typeName);
             }
         }
@@ -62,8 +58,7 @@ namespace UnifiedQueries
         /// </returns>
         public override string ToString()
         {
-            return string.Format("({0} {1} {2})", this.Name,
-                this.Operator, this.Value);
+            return string.Format("({0} {1} {2})", this.Name, this.Operator, this.Value);
         }
     }
 }
